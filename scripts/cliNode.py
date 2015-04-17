@@ -6,14 +6,16 @@ from ArmduinoRover.srv import *
 
 TCP_IP = '127.0.0.1'
 TCP_PORT = 6789
-BUFFER_SIZE = 1024
 cli = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 cli.connect((TCP_IP, TCP_PORT))
+
+def readLine():
+	return cli.makefile().readline()
 
 def handle_request(req):
     print "Receiving %s "%(req.str)
     cli.send(req.str)
-    data = cli.recv(BUFFER_SIZE)
+    data = readLine()
     return cliCommResponse(data)
 
 def cli_service():
