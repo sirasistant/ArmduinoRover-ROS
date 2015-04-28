@@ -50,11 +50,18 @@ find_package(OpenCV REQUIRED)
 #   Message1.msg
 #   Message2.msg
 # )
-
+add_message_files(
+  FILES
+  floatArr.msg
+  intArr.msg
+)
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
    cliComm.srv
+   setTwist.srv
+   setArm.srv
+   setEngines.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -105,18 +112,21 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(camera_node src/camera_node.cpp)
-
+add_executable(sensors_publisher src/sensors_publisher.cpp)
+add_executable(actuators_server src/actuators_server.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(camera_node ArmduinoRover_generate_messages_cpp)
-
+add_dependencies(sensors_publisher ArmduinoRover_generate_messages_cpp)
+add_dependencies(actuators_server ArmduinoRover_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(ArmduinoRover_node
 #   ${catkin_LIBRARIES}
 # )
 
 target_link_libraries(camera_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-
+target_link_libraries(sensors_publisher ${catkin_LIBRARIES})
+target_link_libraries(actuators_server ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
