@@ -17,7 +17,7 @@ def handle_request(req):
     #cli.send(req.str)
     #data = readLine()
     #return cliCommResponse(data)
-    return cliCommResponse("7.7 8.1 200 300 200 300\n")
+    return cliCommResponse("400 600 200 300 200 300\n")
 
 def cli_service():
     rospy.init_node('cli_node')

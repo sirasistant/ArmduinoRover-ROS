@@ -63,10 +63,10 @@ int main(int argc, char **argv) {
 			encoder_msg.count = 0;
 			for (int i = 0; i < arr.size(); i++) {
 				if (i < 2) {
-					batt_msg.data.push_back(atof(arr.at(i).c_str()));
+					batt_msg.data.push_back((10*atoi(arr.at(i).c_str())/1024.0f));
 					batt_msg.count++;
 				} else {
-					encoder_msg.data.push_back(atof(arr.at(i).c_str()));
+					encoder_msg.data.push_back(atoi(arr.at(i).c_str()));
 					encoder_msg.count++;
 				}
 			}

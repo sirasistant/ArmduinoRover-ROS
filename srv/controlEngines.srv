@@ -1,0 +1,6 @@
+int32 left
+int32 right
+int32 priority
+int32 id
+---
+bool done

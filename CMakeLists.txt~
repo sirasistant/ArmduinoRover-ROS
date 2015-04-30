@@ -59,6 +59,12 @@ add_message_files(
  add_service_files(
    FILES
    cliComm.srv
+   setTwist.srv
+   setArm.srv
+   setEngines.srv
+   controlArm.srv
+   controlMovement.srv
+   controlIdAssign.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -111,6 +117,7 @@ include_directories(
 add_executable(camera_node src/camera_node.cpp)
 add_executable(sensors_publisher src/sensors_publisher.cpp)
 add_executable(actuators_server src/actuators_server.cpp)
+add_executable(control_server src/control_server.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(camera_node ArmduinoRover_generate_messages_cpp)
