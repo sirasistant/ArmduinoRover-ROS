@@ -13,8 +13,8 @@ ros::Publisher circlePub;
 
 void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
     ROS_INFO_STREAM("Getting image");
-    int iLowH = 15;
-    int iHighH = 45;
+    int iLowH = 123;
+    int iHighH = 133;
 
     int iLowS = 0;
     int iHighS = 255;
@@ -32,7 +32,15 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
         return;
     }
     cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2HSV);
-    inRange(cv_ptr->image, cv::Scalar(iLowH, iLowS, iLowV), cv::Scalar(iHighH, iHighS, iHighV), cv_ptr->image); //Threshold the image
+
+    cv::Mat dstA;
+    cv::Mat dstB;
+  
+    inRange(cv_ptr->image, cv::Scalar(0, 30, 30), cv::Scalar(4, 255, 255), dstA);
+    inRange(cv_ptr->image, cv::Scalar(174, 30, 30), cv::Scalar(179, 255, 255), dstB);
+    cv_ptr->image=dstA | dstB;
+
+   
     std::vector<std::vector<cv::Point> > contours;
     cv::findContours(cv_ptr->image,contours,CV_RETR_LIST,CV_CHAIN_APPROX_NONE);
     cv::RotatedRect box;
@@ -42,7 +50,7 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
         if(contours[i].size()>300){
             ROS_INFO_STREAM("Found one");
             box=cv::fitEllipse(contours[i]);
-            if(box.size.height/box.size.width>0.9 && box.size.height/box.size.width<1.1 && box.size.area()>300){
+            if(box.size.height/box.size.width>0.7 && box.size.height/box.size.width<1.3 && box.size.area()>300){
                 radio=(box.size.width+box.size.height)/4;
                 cv::Scalar color(255,255,255);
                 cv::circle(cv_ptr->image,box.center,radio,color,4,8,0);
@@ -59,7 +67,7 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
     }
     cv_ptr->encoding=sensor_msgs::image_encodings::MONO8;
     imPub.publish(cv_ptr->toImageMsg());
-    if(circles.circles.size()>0){
+   if(circles.circles.size()>0){
         circlePub.publish(circles);
     }
 
