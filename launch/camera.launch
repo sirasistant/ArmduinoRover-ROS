@@ -2,7 +2,7 @@
 
 <launch>
 	<node pkg="usb_cam" type="usb_cam_node" name="camera0" >
-	<param name="video_device" value="/dev/video1" />
+	<param name="video_device" value="/dev/video0" />
         <param name="framerate" value="10" />
     </node>
     <node pkg="image_view" type="image_view" name="image_cam0">

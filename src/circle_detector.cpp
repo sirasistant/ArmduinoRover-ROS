@@ -45,6 +45,8 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
     cv::findContours(cv_ptr->image,contours,CV_RETR_LIST,CV_CHAIN_APPROX_NONE);
     cv::RotatedRect box;
     ArmduinoRover::arrayOfCircles circles;
+    circles.sizeX=cv_ptr->image.cols;
+    circles.sizeY=cv_ptr->image.rows;
     int radio;
     for(int i=0;i<contours.size();i++){
         if(contours[i].size()>300){
@@ -60,7 +62,7 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg){
                 circle.center.z=0;
                 circle.color="yellow";
                 circle.radius=radio;
-                circle.reliability=100;
+                circle.reliability=100*(box.size.height/box.size.width-0.3);
                 circles.circles.push_back(circle);
             }
         }
