@@ -9,6 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  sensor_msgs
+  cv_bridge
+  image_transport
 )
 find_package(OpenCV REQUIRED)
 ## System dependencies are found with CMake's conventions
@@ -54,6 +57,8 @@ add_message_files(
   FILES
   floatArr.msg
   intArr.msg
+  circle.msg
+  arrayOfCircles.msg
 )
 ## Generate services in the 'srv' folder
  add_service_files(
@@ -78,6 +83,7 @@ add_message_files(
  generate_messages(
    DEPENDENCIES
    std_msgs
+   geometry_msgs
  )
 
 ###################################
@@ -118,6 +124,7 @@ add_executable(camera_node src/camera_node.cpp)
 add_executable(sensors_publisher src/sensors_publisher.cpp)
 add_executable(actuators_server src/actuators_server.cpp)
 add_executable(control_server src/control_server.cpp)
+add_executable(circle_detector src/circle_detector.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(camera_node ArmduinoRover_generate_messages_cpp)
@@ -133,6 +140,7 @@ target_link_libraries(camera_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(sensors_publisher ${catkin_LIBRARIES})
 target_link_libraries(actuators_server ${catkin_LIBRARIES})
 target_link_libraries(control_server ${catkin_LIBRARIES})
+target_link_libraries(circle_detector ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

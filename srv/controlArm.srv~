@@ -6,5 +6,6 @@ int32 twist1
 int32 twist2
 int32 twist3
 int32 priority
+int32 id
 ---
 bool done

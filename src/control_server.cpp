@@ -7,6 +7,8 @@
 #include "ArmduinoRover/setTwist.h"
 #include "ArmduinoRover/controlIdAssign.h"
 
+static const int VERTICAL_COUNT = 3;
+static const int HORIZONTAL_COUNT = 3;
 ros::ServiceClient enginesClient;
 ros::ServiceClient twistClient;
 ros::ServiceClient armClient;
@@ -19,10 +21,10 @@ struct movement_req {
 	bool active;
 };
 struct arm_req {
-	int vertical1;
-	int vertical2;
-	int vertical3;
+	int vertical[VERTICAL_COUNT];
+	int horizontal[HORIZONTAL_COUNT];
 	int gripper; //TODO
+	int priority;
 	bool active;
 };
 
@@ -39,13 +41,22 @@ bool controlMovement(ArmduinoRover::controlMovement::Request &req,
 	moveRequest.priority = req.priority;
 	moveRequest.active = true;
 	moveRequests[req.id] = moveRequest;
-	res.done=true;
+	res.done = true;
 	return true;
 
 }
 bool controlArm(ArmduinoRover::controlArm::Request &req,
 		ArmduinoRover::controlArm::Response &res) {
 	arm_req armRequest;
+	armRequest.active = true;
+	armRequest.horizontal[0] = req.horizontal1;
+	armRequest.horizontal[1] = req.horizontal2;
+	armRequest.horizontal[2] = req.horizontal3;
+	armRequest.vertical[0] = req.vertical1;
+	armRequest.vertical[1] = req.vertical2;
+	armRequest.vertical[2] = req.vertical3;
+	armRequest.gripper = req.gripper;
+	armRequest.priority = req.priority;
 	armRequests[req.id] = armRequest; //TODO
 	return true;
 }
@@ -94,7 +105,7 @@ int main(int argc, char **argv) {
 		int left = 0;
 		int right = 0;
 		int twist = 0;
-		int prioritySum = 0;
+		int movePrioritySum = 0;
 
 		for (int i = 0; i < moveRequests.size(); i++) {
 			movement_req req = moveRequests.at(i);
@@ -103,13 +114,13 @@ int main(int argc, char **argv) {
 				left += req.left * req.priority;
 				right += req.right * req.priority;
 				twist += req.twist * req.priority;
-				prioritySum += req.priority;
+				movePrioritySum += req.priority;
 			}
 		}
-		if (prioritySum > 0) {
-			left /= prioritySum;
-			right /= prioritySum;
-			twist /= prioritySum;
+		if (movePrioritySum > 0) {
+			left /= movePrioritySum;
+			right /= movePrioritySum;
+			twist /= movePrioritySum;
 			ArmduinoRover::setEngines eng_srv;
 			ArmduinoRover::setTwist tw_srv;
 			eng_srv.request.left = left;
@@ -121,13 +132,44 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-//		for (int i = 0; i < armRequests.size(); i++) {
-//			ArmduinoRover::controlArm::Request req;
-//			if (req != NULL) { TODO
-//				ROS_INFO_STREAM("Processing arm request");
-//			}
-//		}
-
+		int vertical[VERTICAL_COUNT];
+		int horizontal[HORIZONTAL_COUNT];
+		int gripper;
+		int armPrioritySum = 0;
+		for (int i = 0; i < armRequests.size(); i++) {
+			arm_req req = armRequests.at(i);
+			if (req.active) {
+				ROS_INFO_STREAM("Processing arm request");
+				for (int i = 0; i < VERTICAL_COUNT; i++) {
+					vertical[i] += req.vertical[i];
+				}
+				for (int i = 0; i < HORIZONTAL_COUNT; i++) {
+					horizontal[i] += req.horizontal[i];
+				}
+				gripper = req.gripper;
+				armPrioritySum += req.priority;
+			}
+		}
+		if (armPrioritySum > 0) {
+			for (int i = 0; i < VERTICAL_COUNT; i++) {
+				vertical[i] /= armPrioritySum;
+			}
+			for (int i = 0; i < HORIZONTAL_COUNT; i++) {
+				horizontal[i] /= armPrioritySum;
+			}
+			gripper /= armPrioritySum;
+			ArmduinoRover::setArm arm_srv;
+			arm_srv.request.vertical1=vertical[0];
+			arm_srv.request.vertical2=vertical[1];
+			arm_srv.request.vertical3=vertical[2];
+			arm_srv.request.horizontal1=horizontal[0];
+			arm_srv.request.horizontal2=horizontal[1];
+			arm_srv.request.horizontal3=horizontal[2];
+			arm_srv.request.gripper=gripper;
+			if(armClient.call(arm_srv)){
+				ROS_INFO_STREAM("done sending arm");
+			}
+		}
 		moveRequests.clear();
 		moveRequests.resize(idCount);
 		armRequests.clear();

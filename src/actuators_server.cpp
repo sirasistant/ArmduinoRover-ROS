@@ -60,15 +60,15 @@ bool setTwist(ArmduinoRover::setTwist::Request &req,
 bool setArm(ArmduinoRover::setArm::Request &req,
 		ArmduinoRover::setArm::Response &res) {
 	ArmduinoRover::cliComm cli_srv;
-	int twist1=req.twist1;
-	int twist2=req.twist2;
-	int twist3=req.twist3;
+	int horizontal1=req.horizontal1;
+	int horizontal2=req.horizontal2;
+	int horizontal3=req.horizontal3;
 	int gripper=req.gripper;
 	int vertical1=req.vertical1;
 	int vertical2=req.vertical2;
 	int vertical3=req.vertical3;
 	std::stringstream ss;
-	ss<< ""<<twist1<<" "<<twist2<<" "<<twist3<<" "<<vertical1<<" "<<vertical2<<" "<<vertical3<<" "<<gripper<<" 0 0 0 0 0 0 0 0 111111100000000\n";
+	ss<< ""<<horizontal1<<" "<<horizontal2<<" "<<horizontal3<<" "<<vertical1<<" "<<vertical2<<" "<<vertical3<<" "<<gripper<<" 0 0 0 0 0 0 0 0 111111100000000\n";
 	cli_srv.request.str=ss.str();
 	if (client.call(cli_srv)) {
 		std::string resp = cli_srv.response.str;
