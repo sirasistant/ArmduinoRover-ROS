@@ -125,12 +125,14 @@ add_executable(sensors_publisher src/sensors_publisher.cpp)
 add_executable(actuators_server src/actuators_server.cpp)
 add_executable(control_server src/control_server.cpp)
 add_executable(circle_detector src/circle_detector.cpp)
+add_executable(wander_node src/wander_node.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(camera_node ArmduinoRover_generate_messages_cpp)
 add_dependencies(sensors_publisher ArmduinoRover_generate_messages_cpp)
 add_dependencies(actuators_server ArmduinoRover_generate_messages_cpp)
 add_dependencies(control_server ArmduinoRover_generate_messages_cpp)
+add_dependencies(wander_node ArmduinoRover_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(ArmduinoRover_node
 #   ${catkin_LIBRARIES}
@@ -140,7 +142,8 @@ target_link_libraries(camera_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(sensors_publisher ${catkin_LIBRARIES})
 target_link_libraries(actuators_server ${catkin_LIBRARIES})
 target_link_libraries(control_server ${catkin_LIBRARIES})
-target_link_libraries(circle_detector ${catkin_LIBRARIES})
+target_link_libraries(circle_detector ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(wander_node ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############

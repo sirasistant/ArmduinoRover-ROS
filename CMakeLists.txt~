@@ -140,6 +140,7 @@ target_link_libraries(camera_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(sensors_publisher ${catkin_LIBRARIES})
 target_link_libraries(actuators_server ${catkin_LIBRARIES})
 target_link_libraries(control_server ${catkin_LIBRARIES})
+target_link_libraries(circle_detector ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
