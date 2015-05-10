@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   cv_bridge
   image_transport
+  tf2
+  tf2_ros
 )
 find_package(OpenCV REQUIRED)
 ## System dependencies are found with CMake's conventions
@@ -128,6 +130,8 @@ add_executable(circle_detector src/circle_detector.cpp)
 add_executable(wander_node src/wander_node.cpp)
 add_executable(ball_follower src/ball_follower.cpp)
 add_executable(wall_avoider src/wall_avoider.cpp)
+add_executable(odometry_node src/odometry_node.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(sensors_publisher ArmduinoRover_generate_messages_cpp)
@@ -137,6 +141,8 @@ add_dependencies(circle_detector ArmduinoRover_generate_messages_cpp)
 add_dependencies(wander_node ArmduinoRover_generate_messages_cpp)
 add_dependencies(ball_follower ArmduinoRover_generate_messages_cpp)
 add_dependencies(wall_avoider ArmduinoRover_generate_messages_cpp)
+add_dependencies(odometry_node ArmduinoRover_generate_messages_cpp)
+
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(ArmduinoRover_node
 #   ${catkin_LIBRARIES}
@@ -149,6 +155,8 @@ target_link_libraries(circle_detector ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(wander_node ${catkin_LIBRARIES})
 target_link_libraries(ball_follower ${catkin_LIBRARIES})
 target_link_libraries(wall_avoider ${catkin_LIBRARIES})
+target_link_libraries(odometry_node ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
