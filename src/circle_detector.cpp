@@ -16,14 +16,6 @@ double maxAxialDiff;
 
 void onImageReceived(const sensor_msgs::ImageConstPtr& msg) {
 	ROS_INFO_STREAM("Getting image");
-	int iLowH = 123;
-	int iHighH = 133;
-
-	int iLowS = 0;
-	int iHighS = 255;
-
-	int iLowV = 0;
-	int iHighV = 255;
 
 	cv_bridge::CvImagePtr cv_ptr;
 	try {
@@ -42,7 +34,7 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg) {
 	inRange(cv_ptr->image, cv::Scalar(174, 30, 30), cv::Scalar(179, 255, 255),
 			dstB);
 	cv_ptr->image = dstA | dstB;
-	cv::GaussianBlur(cv_ptr->image,cv_ptr->image, cv::Size( 7, 7), 0, 0 );
+	cv::GaussianBlur(cv_ptr->image, cv_ptr->image, cv::Size(7, 7), 0, 0);
 	std::vector<std::vector<cv::Point> > contours;
 	cv::findContours(cv_ptr->image, contours, CV_RETR_LIST,
 			CV_CHAIN_APPROX_NONE);
@@ -55,8 +47,8 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg) {
 		if (contours[i].size() > minSize) {
 			ROS_INFO_STREAM("Found one");
 			box = cv::fitEllipse(contours[i]);
-			if (box.size.height / box.size.width > (1-maxAxialDiff)
-					&& box.size.height / box.size.width < (1+maxAxialDiff)
+			if (box.size.height / box.size.width > (1 - maxAxialDiff)
+					&& box.size.height / box.size.width < (1 + maxAxialDiff)
 					&& box.size.area() > minSize) {
 				radio = (box.size.width + box.size.height) / 4;
 				cv::Scalar color(255, 255, 255);
@@ -75,9 +67,8 @@ void onImageReceived(const sensor_msgs::ImageConstPtr& msg) {
 	}
 	cv_ptr->encoding = sensor_msgs::image_encodings::MONO8;
 	imPub.publish(cv_ptr->toImageMsg());
-	if (circles.circles.size() > 0) {
-		circlePub.publish(circles);
-	}
+
+	circlePub.publish(circles);
 
 }
 
@@ -89,7 +80,7 @@ int main(int argc, char* argv[]) {
 	imPub = it.advertise("camera_hsv", 1);
 	sub = it.subscribe("camera_raw", 1, &onImageReceived);
 	circlePub = nh.advertise<ArmduinoRover::arrayOfCircles>("circles", 1000);
-	ros::param::param("min_size",minSize,300);
-	ros::param::param("max_axial_diff",maxAxialDiff,0.3);
+	ros::param::param("min_size", minSize, 300);
+	ros::param::param("max_axial_diff", maxAxialDiff, 0.3);
 	ros::spin();
 }

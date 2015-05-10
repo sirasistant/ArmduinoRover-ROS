@@ -39,15 +39,15 @@ int main(int argc, char **argv) {
 		ArmduinoRover::controlMovement mvSrv;
 		ticksPassed++;
 		if (turning) {
-			mvSrv.request.left = 128;
-			mvSrv.request.right = -128;
+			mvSrv.request.left = -128;
+			mvSrv.request.right = 128;
 			if (ticksPassed > ticksTurning) {
 				ticksPassed = 0;
 				turning = false;
 			}
 		} else {
 			mvSrv.request.left = 128;
-			mvSrv.request.right = -128;
+			mvSrv.request.right = 128;
 			if (ticksPassed > ticksForward) {
 				ticksPassed = 0;
 				turning = true;

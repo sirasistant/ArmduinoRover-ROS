@@ -100,8 +100,11 @@ int main(int argc, char **argv) {
 	ros::ServiceServer idService = n.advertiseService("control_id_assign",
 			assignId);
 	ROS_INFO("Ready to control robot.");
-	ros::Rate loop_rate(0.1);
+	double freq;
+	ros::param::param("frequency",freq,2.0);
+	ros::Rate loop_rate(freq);
 	while (ros::ok()) {
+		ros::spinOnce();
 		int left = 0;
 		int right = 0;
 		int twist = 0;
@@ -174,7 +177,6 @@ int main(int argc, char **argv) {
 		moveRequests.resize(idCount);
 		armRequests.clear();
 		armRequests.resize(idCount);
-		ros::spinOnce();
 		loop_rate.sleep();
 	}
 

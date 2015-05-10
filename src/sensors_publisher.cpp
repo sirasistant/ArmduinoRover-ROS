@@ -50,10 +50,14 @@ int main(int argc, char **argv) {
 			"encoder_lectures", 1000);
 	ros::Publisher range_pub = n.advertise<std_msgs::Int32>("range_lectures",
 			1000);
-	ros::Rate loop_rate(10);
+	double freq;
+	ros::param::param("frequency",freq,15.0);
+	ros::Rate loop_rate(freq);
 	ros::ServiceClient client = n.serviceClient<ArmduinoRover::cliComm>(
 			"cli_communication");
 	while (ros::ok()) {
+		ros::spinOnce();
+
 		ArmduinoRover::cliComm cli_srv;
 		cli_srv.request.str = "READSENSORS\n";
 		if (client.call(cli_srv)) {
@@ -94,11 +98,11 @@ int main(int argc, char **argv) {
 								} else {
 									if (i < 10) { //HC-SR04
 										int dist = atoi(arr.at(i).c_str());
-										if (dist != 51) {
-											std_msgs::Int32 rangeMsg;
-											rangeMsg.data = dist;
-											range_pub.publish(rangeMsg);
-										}
+
+										std_msgs::Int32 rangeMsg;
+										rangeMsg.data = dist;
+										range_pub.publish(rangeMsg);
+
 									}
 								}
 							}
@@ -117,7 +121,6 @@ int main(int argc, char **argv) {
 		} else {
 			ROS_ERROR("Failed to call cli service ");
 		}
-		ros::spinOnce();
 
 		loop_rate.sleep();
 	}

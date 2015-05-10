@@ -7,42 +7,61 @@
 #include <ArmduinoRover/circle.h>
 #include <ArmduinoRover/arrayOfCircles.h>
 
-static const int DESIRED_RADIUS=300; //TODO customize
-
 ros::Subscriber circlesSub;
+int setPointX;
+int xError;
+int radError;
+int radiusSetpoint;
 
-void onCirclesDetected(const ArmduinoRover::arrayOfCirclesConstPtr& msg){
-	std::vector<ArmduinoRover::circle> circles=msg->circles;
-	int imageWidth=msg->sizeX;
-	int imageHeight=msg->sizeY;
+bool circlesDetected = false;
 
-	//find the most reliable circle
+void onCirclesDetected(const ArmduinoRover::arrayOfCirclesConstPtr& msg) {
+	std::vector<ArmduinoRover::circle> circles = msg->circles;
+	if (circles.size() > 0) {
+		circlesDetected = true;
+		int imageWidth = msg->sizeX;
+		int imageHeight = msg->sizeY;
 
-	int maxReliability=-1;
-	int mostReliableIndex=-1;
+		//find the most reliable circle
 
-	for(int i=0;i<circles.size();i++){
-		ArmduinoRover::circle circle=circles.at(i);
-		if(circle.reliability>maxReliability){
-			maxReliability=circle.reliability;
-			mostReliableIndex=i;
+		int maxReliability = -1;
+		int mostReliableIndex = -1;
+
+		for (int i = 0; i < circles.size(); i++) {
+			ArmduinoRover::circle circle = circles.at(i);
+			if (circle.reliability > maxReliability) {
+				maxReliability = circle.reliability;
+				mostReliableIndex = i;
+			}
 		}
-	}
 
-	ArmduinoRover::circle mostReliable=circles.at(mostReliableIndex);
-	int circleX=mostReliable.center.x;
-	int setPointX=imageWidth/2;
-	int xError=setPointX-circleX;
-	int circleRad=mostReliable.radius;
-	int radError=DESIRED_RADIUS-circleRad;
-	//TODO publish errors to pid node
+		ArmduinoRover::circle mostReliable = circles.at(mostReliableIndex);
+		int circleX = mostReliable.center.x;
+		setPointX = imageWidth / 2;
+		xError = setPointX - circleX;
+		int circleRad = mostReliable.radius;
+		radError = radiusSetpoint - circleRad;
+	} else {
+		circlesDetected = false;
+	}
 
 }
 
-int main (int argc, char* argv[]){
-    ros::init(argc,argv,"ball_follower");
-    ros::NodeHandle nh;
-    ROS_INFO_STREAM("Starting ball following");
-    circlesSub=nh.subscribe<ArmduinoRover::arrayOfCircles>("circles",1000,&onCirclesDetected);
-    ros::spin();
+int main(int argc, char* argv[]) {
+	ros::init(argc, argv, "ball_follower");
+	ros::NodeHandle nh;
+	ROS_INFO_STREAM("Starting ball following");
+	circlesSub = nh.subscribe<ArmduinoRover::arrayOfCircles>("circles", 1000,
+			&onCirclesDetected);
+	ros::param::param("radius_setpoint", radiusSetpoint, 100);
+	double freq;
+	ros::param::param("frequency", freq, 5.0);
+	ros::Rate loop_rate(freq);
+	while (ros::ok()) {
+		ros::spinOnce();
+		if(circlesDetected){
+			//TODO publish errors to pid node
+		}
+		loop_rate.sleep();
+	}
 }
