@@ -31,7 +31,7 @@ bool moveEngines(ArmduinoRover::setEngines::Request &req,
 		ArmduinoRover::setEngines::Response &res) {
 	ArmduinoRover::cliComm cli_srv;
 	std::stringstream ss;
-	ss<< "0 0 0 0 0 0 0 "<<req.left<<" "<<req.right<<" "<<req.left<<" "<<req.right<<" 0 0 0 0 000000011110000\n";
+	ss<< "MOVE 0 0 0 0 0 0 0 0 0 0 0 "<<req.left+255<<" "<<req.right+255<<" "<<req.left+255<<" "<<req.right+255<<" 000000000001111\n";
 	cli_srv.request.str=ss.str();
 	if (client.call(cli_srv)) {
 		std::string resp = cli_srv.response.str;
@@ -45,9 +45,9 @@ bool moveEngines(ArmduinoRover::setEngines::Request &req,
 bool setTwist(ArmduinoRover::setTwist::Request &req,
 		ArmduinoRover::setTwist::Response &res) {
 	ArmduinoRover::cliComm cli_srv;
-	int twist=req.twist;
+	int twist=req.twist+90;
 	std::stringstream ss;
-	ss<<"0 0 0 0 0 0 0 0 0 0 0 "<<twist<<" "<<twist<<" "<<twist<<" "<<twist<<" 000000000001111\n";
+	ss<<"MOVE 0 0 0 0 0 0 0 "<<twist<<" "<<twist<<" "<<twist<<" "<<twist<<" 0 0 0 0 000000011110000\n";
 	cli_srv.request.str=ss.str();
 	if (client.call(cli_srv)) {
 		std::string resp = cli_srv.response.str;
@@ -68,7 +68,7 @@ bool setArm(ArmduinoRover::setArm::Request &req,
 	int vertical2=req.vertical2;
 	int vertical3=req.vertical3;
 	std::stringstream ss;
-	ss<< ""<<horizontal1<<" "<<horizontal2<<" "<<horizontal3<<" "<<vertical1<<" "<<vertical2<<" "<<vertical3<<" "<<gripper<<" 0 0 0 0 0 0 0 0 111111100000000\n";
+	ss<< "MOVE "<<vertical1<<" "<<horizontal1<<" "<<vertical2<<" "<<horizontal2<<" "<<vertical3<<" "<<horizontal3<<" "<<gripper<<" 0 0 0 0 0 0 0 0 111111100000000\n";
 	cli_srv.request.str=ss.str();
 	if (client.call(cli_srv)) {
 		std::string resp = cli_srv.response.str;
