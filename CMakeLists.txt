@@ -62,6 +62,8 @@ add_message_files(
   circle.msg
   arrayOfCircles.msg
   encoder_data.msg
+  controlArm.msg
+  controlMovement.msg
 )
 ## Generate services in the 'srv' folder
  add_service_files(
@@ -70,8 +72,6 @@ add_message_files(
    setTwist.srv
    setArm.srv
    setEngines.srv
-   controlArm.srv
-   controlMovement.srv
    controlIdAssign.srv
  )
 

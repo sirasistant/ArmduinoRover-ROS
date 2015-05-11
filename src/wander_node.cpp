@@ -9,8 +9,8 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "wander_node");
 
 	ros::NodeHandle n;
-	ros::ServiceClient moveClient = n.serviceClient<
-			ArmduinoRover::controlMovement>("control_movement");
+	ros::Publisher movePub = n.advertise<
+			ArmduinoRover::controlMovement>("control_movement",1000);
 	ros::ServiceClient idClient =
 			n.serviceClient<ArmduinoRover::controlIdAssign>(
 					"control_id_assign");
@@ -36,35 +36,29 @@ int main(int argc, char **argv) {
 	int ticksTurning = turnSecs * FREQ;
 	int ticksForward = forwardSecs * FREQ;
 	while (ros::ok()) {
-		ArmduinoRover::controlMovement mvSrv;
+		ArmduinoRover::controlMovement moveMsg;
 		ticksPassed++;
 		if (turning) {
-			mvSrv.request.left = -128;
-			mvSrv.request.right = 128;
+			moveMsg.left = -128;
+			moveMsg.right = 128;
 			if (ticksPassed > ticksTurning) {
 				ROS_INFO_STREAM("TURNING");
 				ticksPassed = 0;
 				turning = false;
 			}
 		} else {
-			mvSrv.request.left = 128;
-			mvSrv.request.right = 128;
+			moveMsg.left = 128;
+			moveMsg.right = 128;
 			if (ticksPassed > ticksForward) {
 				ROS_INFO_STREAM("FORWARD");
 				ticksPassed = 0;
 				turning = true;
 			}
 		}
-		mvSrv.request.id = id;
-		mvSrv.request.priority = priority;
-		mvSrv.request.twist = 0;
-		if (!moveClient.call(mvSrv)) {
-			ROS_ERROR_STREAM("Can't contact control server anymore");
-		} else {
-			if (!mvSrv.response.done) {
-				ROS_WARN_STREAM("Can't wander");
-			}
-		}
+		moveMsg.id = id;
+		moveMsg.priority = priority;
+		moveMsg.twist = 0;
+		movePub.publish(moveMsg);
 		ros::spinOnce();
 		loop_rate.sleep();
 	}

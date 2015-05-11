@@ -7,5 +7,3 @@ int32 horizontal2
 int32 horizontal3
 int32 priority
 int32 id
----
-bool done

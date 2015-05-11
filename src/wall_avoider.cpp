@@ -8,7 +8,7 @@ int id;
 int priority;
 int minDistance;
 int distance;
-ros::ServiceClient moveClient;
+ros::Publisher movePub;
 
 void onRangeReceived(const std_msgs::Int32::ConstPtr& msg) {
     distance = msg->data;
@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "wall_avoider");
 
 	ros::NodeHandle n;
-	moveClient = n.serviceClient<ArmduinoRover::controlMovement>(
-			"control_movement");
+	movePub = n.advertise<ArmduinoRover::controlMovement>(
+			"control_movement",1000);
 	ros::ServiceClient idClient =
 			n.serviceClient<ArmduinoRover::controlIdAssign>(
 					"control_id_assign");
@@ -41,20 +41,14 @@ int main(int argc, char **argv) {
 	while(ros::ok()){
 		ros::spinOnce();
 		if (distance < minDistance) {
-				ArmduinoRover::controlMovement mvSrv;
+				ArmduinoRover::controlMovement mvMsg;
 				float multiplicator=0.5+(minDistance-distance)/(2*minDistance);
-				mvSrv.request.right = 128*multiplicator;
-				mvSrv.request.left = -128*multiplicator;
-				mvSrv.request.id = id;
-				mvSrv.request.priority = priority;
-				mvSrv.request.twist = 0;
-				if (!moveClient.call(mvSrv)) {
-					ROS_ERROR_STREAM("Can't contact control server anymore");
-				} else {
-					if (!mvSrv.response.done) {
-						ROS_WARN_STREAM("Can't avoid!");
-					}
-				}
+				mvMsg.right = 128*multiplicator;
+				mvMsg.left = -128*multiplicator;
+				mvMsg.id = id;
+				mvMsg.priority = priority;
+				mvMsg.twist = 0;
+				movePub.publish(mvMsg);
 			}
 		loop_rate.sleep();
 	}

@@ -32,33 +32,28 @@ std::vector<movement_req> moveRequests;
 std::vector<arm_req> armRequests;
 int idCount = 0;
 
-bool controlMovement(ArmduinoRover::controlMovement::Request &req,
-		ArmduinoRover::controlMovement::Response &res) {
-	movement_req moveRequest;
-	moveRequest.left = req.left;
-	moveRequest.right = req.right;
-	moveRequest.twist = req.twist;
-	moveRequest.priority = req.priority;
-	moveRequest.active = true;
-	moveRequests[req.id] = moveRequest;
-	res.done = true;
-	return true;
+void controlMovement(const ArmduinoRover::controlMovement::ConstPtr& msg) {
 
+	movement_req moveRequest;
+	moveRequest.left = msg->left;
+	moveRequest.right = msg->right;
+	moveRequest.twist = msg->twist;
+	moveRequest.priority = msg->priority;
+	moveRequest.active = true;
+	moveRequests[msg->id] = moveRequest;
 }
-bool controlArm(ArmduinoRover::controlArm::Request &req,
-		ArmduinoRover::controlArm::Response &res) {
+void controlArm(const ArmduinoRover::controlArm::ConstPtr& msg)  {
 	arm_req armRequest;
 	armRequest.active = true;
-	armRequest.horizontal[0] = req.horizontal1;
-	armRequest.horizontal[1] = req.horizontal2;
-	armRequest.horizontal[2] = req.horizontal3;
-	armRequest.vertical[0] = req.vertical1;
-	armRequest.vertical[1] = req.vertical2;
-	armRequest.vertical[2] = req.vertical3;
-	armRequest.gripper = req.gripper;
-	armRequest.priority = req.priority;
-	armRequests[req.id] = armRequest; //TODO
-	return true;
+	armRequest.horizontal[0] = msg->horizontal1;
+	armRequest.horizontal[1] = msg->horizontal2;
+	armRequest.horizontal[2] = msg->horizontal3;
+	armRequest.vertical[0] = msg->vertical1;
+	armRequest.vertical[1] = msg->vertical2;
+	armRequest.vertical[2] = msg->vertical3;
+	armRequest.gripper = msg->gripper;
+	armRequest.priority = msg->priority;
+	armRequests[msg->id] = armRequest; //TODO
 }
 
 bool assignId(ArmduinoRover::controlIdAssign::Request &req,
@@ -93,9 +88,9 @@ int main(int argc, char **argv) {
 	enginesClient = n.serviceClient<ArmduinoRover::setEngines>("set_engines");
 	twistClient = n.serviceClient<ArmduinoRover::setTwist>("set_twist");
 	armClient = n.serviceClient<ArmduinoRover::setArm>("set_arm");
-	ros::ServiceServer moveService = n.advertiseService("control_movement",
+	ros::Subscriber moveService = n.subscribe<ArmduinoRover::controlMovement>("control_movement",1000,
 			controlMovement);
-	ros::ServiceServer twistService = n.advertiseService("control_arm",
+	ros::Subscriber twistService = n.subscribe<ArmduinoRover::controlArm>("control_arm",1000,
 			controlArm);
 	ros::ServiceServer idService = n.advertiseService("control_id_assign",
 			assignId);
