@@ -77,35 +77,14 @@ int main(int argc, char **argv) {
 					batt_msg.count++;
 				} else {
 					if (i < 6) {
-						encoder_msg.lectures.data.push_back(
-								atoi(arr.at(i).c_str()));
-						encoder_msg.lectures.count++;
+						//Ignored raw encoders
 					} else {
-						if (i < 7) { //TWIST
-							encoder_msg.twist = atoi(arr.at(i).c_str()) - 90;
-						} else {
-							if (i < 8) { //LEFT
-								areEncodersBackwards.push_back(
-										255 > atoi(arr.at(i).c_str()));
-								areEncodersBackwards.push_back(
-										255 > atoi(arr.at(i).c_str()));
-							} else { //RIGHT
-								if (i < 9) {
-									areEncodersBackwards.push_back(
-											255 > atoi(arr.at(i).c_str()));
-									areEncodersBackwards.push_back(
-											255 > atoi(arr.at(i).c_str()));
-								} else {
-									if (i < 10) { //HC-SR04
-										int dist = atoi(arr.at(i).c_str());
+						if (i < 7) {//HC-SR04
+							int dist = atoi(arr.at(i).c_str());
 
-										std_msgs::Int32 rangeMsg;
-										rangeMsg.data = dist;
-										range_pub.publish(rangeMsg);
-
-									}
-								}
-							}
+							std_msgs::Int32 rangeMsg;
+							rangeMsg.data = dist;
+							range_pub.publish(rangeMsg);
 						}
 					}
 				}

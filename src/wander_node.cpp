@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
 			mvSrv.request.left = -128;
 			mvSrv.request.right = 128;
 			if (ticksPassed > ticksTurning) {
+				ROS_INFO_STREAM("TURNING");
 				ticksPassed = 0;
 				turning = false;
 			}
@@ -49,6 +50,7 @@ int main(int argc, char **argv) {
 			mvSrv.request.left = 128;
 			mvSrv.request.right = 128;
 			if (ticksPassed > ticksForward) {
+				ROS_INFO_STREAM("FORWARD");
 				ticksPassed = 0;
 				turning = true;
 			}
