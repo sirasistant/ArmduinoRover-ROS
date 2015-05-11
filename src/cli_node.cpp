@@ -84,7 +84,7 @@ bool tcp_client::conn(string address, int port) {
 	//Connect to remote server
 	if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
 		perror("connect failed. Error");
-		return 1;
+		return false;
 	}
 
 	cout << "Connected\n";
@@ -120,10 +120,10 @@ string tcp_client::receive(int size = 512) {
 	return reply;
 }
 
-string tcp_client::readLine(){
-	string received=receive();
-	while(received.find('\n')!= string::npos){
-		received+=receive();
+string tcp_client::readLine() {
+	string received = receive();
+	while (received.find('\n') != string::npos) {
+		received += receive();
 	}
 	return received;
 }
@@ -132,9 +132,9 @@ tcp_client client;
 
 bool cliComm(ArmduinoRover::cliComm::Request &req,
 		ArmduinoRover::cliComm::Response &res) {
-	ROS_INFO_STREAM("Sending: "+req.str);
+	ROS_INFO_STREAM("Sending: " + req.str);
 	client.send_data(req.str);
-	res.str=client.readLine();
+	res.str = client.readLine();
 	return true;
 }
 
@@ -149,18 +149,21 @@ int main(int argc, char **argv) {
 	 */
 	ros::NodeHandle n;
 
-	ros::ServiceServer cliServer = n.advertiseService("cli_communication", cliComm);
+	ros::ServiceServer cliServer = n.advertiseService("cli_communication",
+			cliComm);
 	string address;
 	int port;
-	ros::param::param<string>("address",address,"localhost");
-	ros::param::param<int>("port",port,6789);
-	client.conn(address,port);
-	client.readLine();
-	client.send_data("CONNECT");
-	client.readLine();
-	ROS_INFO("Ready to communicate with cli.");
-	ros::spin();
+	ros::param::param<string>("address", address, "localhost");
+	ros::param::param<int>("port", port, 6789);
+	if (client.conn(address, port)) {
+		client.readLine();
+		client.send_data("CONNECT");
+		client.readLine();
+		ROS_INFO("Ready to communicate with cli.");
+		ros::spin();
 
-	return 0;
+		return 0;
+	} else
+		return 1;
 }
 
