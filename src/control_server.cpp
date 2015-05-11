@@ -33,7 +33,6 @@ std::vector<arm_req> armRequests;
 int idCount = 0;
 
 void controlMovement(const ArmduinoRover::controlMovement::ConstPtr& msg) {
-
 	movement_req moveRequest;
 	moveRequest.left = msg->left;
 	moveRequest.right = msg->right;
