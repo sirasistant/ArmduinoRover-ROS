@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 			moveMsg.left = -128;
 			moveMsg.right = 128;
 			if (ticksPassed > ticksTurning) {
-				ROS_INFO_STREAM("TURNING");
+				ROS_INFO_STREAM("FORWARD");
 				ticksPassed = 0;
 				turning = false;
 			}
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 			moveMsg.left = 128;
 			moveMsg.right = 128;
 			if (ticksPassed > ticksForward) {
-				ROS_INFO_STREAM("FORWARD");
+				ROS_INFO_STREAM("TURNING");
 				ticksPassed = 0;
 				turning = true;
 			}
