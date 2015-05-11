@@ -21,6 +21,9 @@ def handle_request(req):
 def cli_service():
     rospy.init_node('cli_node')
     s = rospy.Service('cli_communication', cliComm, handle_request)
+    readLine()
+    cli.send("CONNECT \n")
+    readLine()
     print "Ready to communicate."
     rospy.spin()
 
