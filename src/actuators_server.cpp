@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 	 * NodeHandle destructed will close down the node.
 	 */
 	ros::NodeHandle n;
-
+	ros::service::waitForService("cli_communication");
 	client = n.serviceClient<ArmduinoRover::cliComm>("cli_communication");
 
 	ros::ServiceServer enginesService = n.advertiseService("set_engines", moveEngines);

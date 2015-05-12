@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "wall_avoider");
 
 	ros::NodeHandle n;
+	ros::service::waitForService("control_id_assign");
 	movePub = n.advertise<ArmduinoRover::controlMovement>(
 			"control_movement",1000);
 	ros::ServiceClient idClient =

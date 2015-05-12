@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
 	 * NodeHandle destructed will close down the node.
 	 */
 	ros::NodeHandle n;
+	ros::service::waitForService("cli_bridge");
 
 	ros::ServiceServer cliServer = n.advertiseService("cli_communication",
 			cliComm);

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+   
+     <node pkg="ArmduinoRover" type="cli_bridge" name="cli_bridge">
+    </node>
+
+    <node pkg="ArmduinoRover" type="cli_node" name="cli_node">
+    </node>
+	
+	<node pkg="ArmduinoRover" type="actuators_server" name="actuators_server">
+    </node>
+
+    <node pkg="ArmduinoRover" type="control_server" name="control_server">
+    </node>
+
+    <node pkg="ArmduinoRover" type="sensors_publisher" name="sensors_publisher">
+    </node>
+</launch>

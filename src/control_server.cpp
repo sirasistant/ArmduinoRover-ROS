@@ -83,7 +83,9 @@ int main(int argc, char **argv) {
 	 * NodeHandle destructed will close down the node.
 	 */
 	ros::NodeHandle n;
-
+	ros::service::waitForService("set_engines");
+	ros::service::waitForService("set_twist");
+	ros::service::waitForService("set_arm");
 	enginesClient = n.serviceClient<ArmduinoRover::setEngines>("set_engines");
 	twistClient = n.serviceClient<ArmduinoRover::setTwist>("set_twist");
 	armClient = n.serviceClient<ArmduinoRover::setArm>("set_arm");

@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "wander_node");
 
 	ros::NodeHandle n;
+	ros::service::waitForService("control_id_assign");
 	ros::Publisher movePub = n.advertise<
 			ArmduinoRover::controlMovement>("control_movement",1000);
 	ros::ServiceClient idClient =

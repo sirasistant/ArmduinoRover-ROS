@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	 * NodeHandle destructed will close down the node.
 	 */
 	ros::NodeHandle n;
-
+	ros::service::waitForService("cli_communication");
 	ros::Publisher battery_pub = n.advertise<ArmduinoRover::floatArr>(
 			"battery_lectures", 1000);
 	ros::Publisher encoder_pub = n.advertise<ArmduinoRover::encoder_data>(
