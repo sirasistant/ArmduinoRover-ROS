@@ -122,7 +122,7 @@ string tcp_client::receive(int size = 512) {
 
 string tcp_client::readLine() {
 	string received = receive();
-	while (received.find('\n') != string::npos) {
+	while (received.find('\n') == string::npos) {
 		received += receive();
 	}
 	return received;
