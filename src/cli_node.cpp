@@ -123,6 +123,7 @@ string tcp_client::receive(int size = 512) {
 string tcp_client::readLine() {
 	string received = receive();
 	while (received.find('\n') == string::npos) {
+		ROS_INFO_STREAM(received);
 		received += receive();
 	}
 	return received;
@@ -156,9 +157,9 @@ int main(int argc, char **argv) {
 	ros::param::param<string>("address", address, "localhost");
 	ros::param::param<int>("port", port, 6789);
 	if (client.conn(address, port)) {
-		client.readLine();
+		ROS_INFO_STREAM(client.readLine());
 		client.send_data("CONNECT");
-		client.readLine();
+		ROS_INFO_STREAM(client.readLine());
 		ROS_INFO("Ready to communicate with cli.");
 		ros::spin();
 
