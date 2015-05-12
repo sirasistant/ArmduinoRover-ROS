@@ -1,8 +1,5 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include "ArmduinoRover/floatArr.h"
-#include "ArmduinoRover/intArr.h"
-#include "ArmduinoRover/cliComm.h"
 #include "ArmduinoRover/encoder_data.h"
 #include "std_msgs/Int32.h"
 #include <string>
@@ -10,11 +7,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
+#include "ArmduinoRover/cliComm.h"
 
-std::vector<std::string> split(std::string str, std::string sep) {
+using namespace std;
+
+vector<string> split(string str, string sep) {
 	char* cstr = const_cast<char*>(str.c_str());
 	char* current;
-	std::vector<std::string> arr;
+	vector<string> arr;
 	current = strtok(cstr, sep.c_str());
 	while (current != NULL) {
 		arr.push_back(current);
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 	 * You must call one of the versions of ros::init() before using any other
 	 * part of the ROS system.
 	 */
-	ros::init(argc, argv, "sensors_publisher");
+	ros::init(argc, argv, "navigation_publisher");
 
 	/**
 	 * NodeHandle is the main access point to communications with the ROS system.
@@ -43,12 +43,10 @@ int main(int argc, char **argv) {
 	 */
 	ros::NodeHandle n;
 	ros::service::waitForService("cli_communication");
-	ros::Publisher battery_pub = n.advertise<ArmduinoRover::floatArr>(
-			"battery_lectures", 1000);
-	ros::Publisher range_pub = n.advertise<std_msgs::Int32>("range_lectures",
-			1000);
+	ros::Publisher encoder_pub = n.advertise<ArmduinoRover::encoder_data>(
+			"encoder_lectures", 1000);
 	double freq;
-	ros::param::param("frequency",freq,1.0);
+	ros::param::param("frequency", freq, 3.0);
 	ros::Rate loop_rate(freq);
 	ros::ServiceClient client = n.serviceClient<ArmduinoRover::cliComm>(
 			"cli_communication");
@@ -58,32 +56,23 @@ int main(int argc, char **argv) {
 		ArmduinoRover::cliComm cli_srv;
 		cli_srv.request.str = "READSENSORS\n";
 		if (client.call(cli_srv)) {
-			std::string resp = cli_srv.response.str;
+			string resp = cli_srv.response.str;
 			ROS_INFO_STREAM(resp);
-			std::vector<std::string> arr;
+			vector<string> arr;
 			arr = split(resp, " ");
-			ArmduinoRover::floatArr batt_msg;
-			batt_msg.count = 0;
+			ArmduinoRover::encoder_data encodersData;
 			for (int i = 1; i < arr.size(); i++) {
-				if (i < 3) {
-					batt_msg.data.push_back(
-							(10 * atoi(arr.at(i).c_str()) / 1024.0f));
-					batt_msg.count++;
+				if (i < 5) {
+					encodersData.lectures.data.push_back(
+							(atoi(arr.at(i).c_str())));
+					encodersData.lectures.count++;
 				} else {
-					if (i < 7) {
-						//Ignored raw encoders
-					} else {
-						if (i < 8) {//HC-SR04
-							int dist = atoi(arr.at(i).c_str());
-
-							std_msgs::Int32 rangeMsg;
-							rangeMsg.data = dist;
-							range_pub.publish(rangeMsg);
-						}
+					if (i < 6) {
+						encodersData.twist = (atoi(arr.at(i).c_str()));
 					}
 				}
 			}
-			battery_pub.publish(batt_msg);
+			encoder_pub.publish(encodersData);
 		} else {
 			ROS_ERROR("Failed to call cli service ");
 		}

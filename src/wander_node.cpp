@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
 	int priority;
 	ros::param::param("priority", priority, 5);
 
+	ROS_INFO_STREAM("Priority set to "<<priority<<", forward secs to "<<forwardSecs<<", turn secs to "<<turnSecs);
+
 	int ticksPassed = 0;
 	bool turning = false;
 	int ticksTurning = turnSecs * FREQ;
