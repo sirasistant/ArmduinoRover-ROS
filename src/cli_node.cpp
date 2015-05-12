@@ -110,19 +110,19 @@ bool tcp_client::send_data(string data) {
  */
 string tcp_client::receive(int size = 512) {
 	char buffer[size];
-	string reply;
+
 	//Receive a reply from the server
 	if (recv(sock, buffer, sizeof(buffer), 0) < 0) {
 		puts("recv failed");
 	}
 
-	reply = buffer;
+	string reply(buffer);
 	return reply;
 }
 
 string tcp_client::readLine() {
 	string received = receive();
-	while (received.find('\n') == string::npos) {
+	while (received.find('\n') == string::npos&&ros::ok()) {
 		ROS_INFO_STREAM(received);
 		received += receive();
 	}
