@@ -37,6 +37,9 @@ int main(int argc, char **argv) {
 	ros::ServiceServer cliServer = n.advertiseService("cli_communication",
 			cliComm);
 	cliBridgeClient=n.serviceClient<ArmduinoRover::cliComm>("cli_bridge");
-		return 0;
+
+	ros::spin();
+
+	return 0;
 }
 
