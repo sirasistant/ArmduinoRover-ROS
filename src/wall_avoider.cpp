@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 		ros::spinOnce();
 		if (distance < minDistance) {
 				ArmduinoRover::controlMovement mvMsg;
-				float multiplicator=0.5+(minDistance-distance)/(2*minDistance);
+				float multiplicator=0.5+(minDistance-distance)/(2.0*minDistance);
 				mvMsg.right = 128*multiplicator;
 				mvMsg.left = -128*multiplicator;
 				mvMsg.id = id;

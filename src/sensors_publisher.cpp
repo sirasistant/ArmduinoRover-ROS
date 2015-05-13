@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	ros::Publisher range_pub = n.advertise<std_msgs::Int32>("range_lectures",
 			1000);
 	double freq;
-	ros::param::param("frequency",freq,1.0);
+	ros::param::param("frequency",freq,5.0);
 	ros::Rate loop_rate(freq);
 	ros::ServiceClient client = n.serviceClient<ArmduinoRover::cliComm>(
 			"cli_communication");
