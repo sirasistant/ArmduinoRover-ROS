@@ -64,16 +64,16 @@ int main(int argc, char **argv) {
 			arr = split(resp, " ");
 			ArmduinoRover::floatArr batt_msg;
 			batt_msg.count = 0;
-			for (int i = 1; i < arr.size(); i++) {
-				if (i < 3) {
+			for (int i = 2; i < arr.size(); i++) {
+				if (i < 4) {
 					batt_msg.data.push_back(
 							(11*1.1 * atoi(arr.at(i).c_str()) / 1024.0f));
 					batt_msg.count++;
 				} else {
-					if (i < 7) {
+					if (i < 8) {
 						//Ignored raw encoders
 					} else {
-						if (i < 8) {//HC-SR04
+						if (i < 9) {//HC-SR04
 							int dist = atoi(arr.at(i).c_str());
 
 							std_msgs::Int32 rangeMsg;

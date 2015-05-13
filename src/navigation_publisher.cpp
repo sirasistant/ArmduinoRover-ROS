@@ -61,13 +61,13 @@ int main(int argc, char **argv) {
 			vector<string> arr;
 			arr = split(resp, " ");
 			ArmduinoRover::encoder_data encodersData;
-			for (int i = 1; i < arr.size(); i++) {
-				if (i < 5) {
+			for (int i = 2; i < arr.size(); i++) {
+				if (i < 6) {
 					encodersData.lectures.data.push_back(
 							(atoi(arr.at(i).c_str())));
 					encodersData.lectures.count++;
 				} else {
-					if (i < 6) {
+					if (i < 7) {
 						encodersData.twist = (atoi(arr.at(i).c_str()));
 					}
 				}
