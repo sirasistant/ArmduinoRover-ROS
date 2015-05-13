@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 		ros::spinOnce();
 
 		ArmduinoRover::cliComm cli_srv;
-		cli_srv.request.str = "READSENSORS\n";
+		cli_srv.request.str = "READNAVIGATION\n";
 		if (client.call(cli_srv)) {
 			string resp = cli_srv.response.str;
 			ROS_INFO_STREAM(resp);

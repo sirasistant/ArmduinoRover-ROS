@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 			for (int i = 1; i < arr.size(); i++) {
 				if (i < 3) {
 					batt_msg.data.push_back(
-							(10 * atoi(arr.at(i).c_str()) / 1024.0f));
+							(11*1.1 * atoi(arr.at(i).c_str()) / 1024.0f));
 					batt_msg.count++;
 				} else {
 					if (i < 7) {
