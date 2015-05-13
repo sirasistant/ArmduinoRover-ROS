@@ -41,7 +41,7 @@ void controlMovement(const ArmduinoRover::controlMovement::ConstPtr& msg) {
 	moveRequest.active = true;
 	moveRequests[msg->id] = moveRequest;
 }
-void controlArm(const ArmduinoRover::controlArm::ConstPtr& msg)  {
+void controlArm(const ArmduinoRover::controlArm::ConstPtr& msg) {
 	arm_req armRequest;
 	armRequest.active = true;
 	armRequest.horizontal[0] = msg->horizontal1;
@@ -89,15 +89,15 @@ int main(int argc, char **argv) {
 	enginesClient = n.serviceClient<ArmduinoRover::setEngines>("set_engines");
 	twistClient = n.serviceClient<ArmduinoRover::setTwist>("set_twist");
 	armClient = n.serviceClient<ArmduinoRover::setArm>("set_arm");
-	ros::Subscriber moveService = n.subscribe<ArmduinoRover::controlMovement>("control_movement",1000,
-			controlMovement);
-	ros::Subscriber twistService = n.subscribe<ArmduinoRover::controlArm>("control_arm",1000,
-			controlArm);
+	ros::Subscriber moveService = n.subscribe<ArmduinoRover::controlMovement>(
+			"control_movement", 1000, controlMovement);
+	ros::Subscriber twistService = n.subscribe<ArmduinoRover::controlArm>(
+			"control_arm", 1000, controlArm);
 	ros::ServiceServer idService = n.advertiseService("control_id_assign",
 			assignId);
 	ROS_INFO("Ready to control robot.");
 	double freq;
-	ros::param::param("frequency",freq,2.0);
+	ros::param::param("frequency", freq, 2.0);
 	ros::Rate loop_rate(freq);
 	while (ros::ok()) {
 		ros::spinOnce();
@@ -125,6 +125,17 @@ int main(int argc, char **argv) {
 			eng_srv.request.left = left;
 			eng_srv.request.right = right;
 			tw_srv.request.twist = twist;
+			if (enginesClient.call(eng_srv)) {
+				if (twistClient.call(tw_srv)) {
+					ROS_INFO_STREAM("done sending movement");
+				}
+			}
+		} else {
+			ArmduinoRover::setEngines eng_srv;
+			ArmduinoRover::setTwist tw_srv;
+			eng_srv.request.left = 0;
+			eng_srv.request.right = 0;
+			tw_srv.request.twist = 0;
 			if (enginesClient.call(eng_srv)) {
 				if (twistClient.call(tw_srv)) {
 					ROS_INFO_STREAM("done sending movement");
@@ -158,14 +169,14 @@ int main(int argc, char **argv) {
 			}
 			gripper /= armPrioritySum;
 			ArmduinoRover::setArm arm_srv;
-			arm_srv.request.vertical1=vertical[0];
-			arm_srv.request.vertical2=vertical[1];
-			arm_srv.request.vertical3=vertical[2];
-			arm_srv.request.horizontal1=horizontal[0];
-			arm_srv.request.horizontal2=horizontal[1];
-			arm_srv.request.horizontal3=horizontal[2];
-			arm_srv.request.gripper=gripper;
-			if(armClient.call(arm_srv)){
+			arm_srv.request.vertical1 = vertical[0];
+			arm_srv.request.vertical2 = vertical[1];
+			arm_srv.request.vertical3 = vertical[2];
+			arm_srv.request.horizontal1 = horizontal[0];
+			arm_srv.request.horizontal2 = horizontal[1];
+			arm_srv.request.horizontal3 = horizontal[2];
+			arm_srv.request.gripper = gripper;
+			if (armClient.call(arm_srv)) {
 				ROS_INFO_STREAM("done sending arm");
 			}
 		}
