@@ -107,6 +107,7 @@ void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 		transformStamped.transform.rotation.w = q.w();
 
 		tfBroadcaster.sendTransform(transformStamped);
+
 	}
 }
 
@@ -121,7 +122,7 @@ int main(int argc, char **argv) {
 	ros::param::param("initial_x", lastX, 0.0);
 	ros::param::param("initial_y", lastY, 0.0);
 	ros::param::param("initial_rotation", lastRotation, 0.0);
-	ros::param::param("wheel_radius", wheelRadius, 0.04);
+	ros::param::param("wheel_radius", wheelRadius, 0.04); //TODO measure
 	ros::param::param("notch_count", notchCount, 20);
 	ros::spin();
 	return 0;

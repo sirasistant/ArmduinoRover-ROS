@@ -26,6 +26,8 @@ void onBatteryReceived(const ArmduinoRover::floatArr::ConstPtr& msg) {
     	for(int i=0;i<msg->data.size();i++){
     		if(msg->data.at(i)<thresholds.at(i)){
     			ROS_ERROR_STREAM("BATTERY LOW BATTERY LOW BATTERY LOW!!!!");
+    		}else{
+    			ROS_INFO_STREAM("Battery "<<i<<" is at "<<msg->data.at(i)<<" volts");
     		}
     	}
     }
@@ -39,7 +41,7 @@ int main(int argc, char **argv) {
 	ros::Subscriber encoderSub = n.subscribe("battery_lectures", 1000,
 			onBatteryReceived);
 	string thresholdsStr;
-	ros::param::param<string>("thresholds", thresholdsStr, "7.1 2.0");
+	ros::param::param<string>("thresholds", thresholdsStr, "7.0 5.0");
 	vector<string>  thresholdSplit=split(thresholdsStr," ");
 
 	for(int i=0;i<thresholdSplit.size();i++){

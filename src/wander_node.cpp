@@ -3,7 +3,7 @@
 #include <ArmduinoRover/controlIdAssign.h>
 #include <ArmduinoRover/controlMovement.h>
 
-const static double FREQ = 10.0;
+const static double FREQ = 15.0;
 
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "wander_node");

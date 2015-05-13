@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 			onRangeReceived);
 	ArmduinoRover::controlIdAssign idSrv;
 
-	ros::param::param("priority", priority, 50);
+	ros::param::param("priority", priority, 500);
 	ros::param::param("min_distance", minDistance, 30);
 
 	while (!idClient.call(idSrv)) {

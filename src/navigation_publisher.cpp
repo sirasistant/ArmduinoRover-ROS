@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 	ros::Publisher encoder_pub = n.advertise<ArmduinoRover::encoder_data>(
 			"encoder_lectures", 1000);
 	double freq;
-	ros::param::param("frequency", freq, 3.0);
+	ros::param::param("frequency", freq, 5.0);
 	ros::Rate loop_rate(freq);
 	ros::ServiceClient client = n.serviceClient<ArmduinoRover::cliComm>(
 			"cli_communication");

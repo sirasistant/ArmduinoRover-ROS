@@ -38,7 +38,7 @@ void onCirclesDetected(const ArmduinoRover::arrayOfCirclesConstPtr& msg) {
 		ArmduinoRover::circle mostReliable = circles.at(mostReliableIndex);
 		int circleX = mostReliable.center.x;
 		setPointX = imageWidth / 2;
-		xError = setPointX - circleX;
+		xError = circleX - setPointX;
 		int circleRad = mostReliable.radius;
 		radError = radiusSetpoint - circleRad;
 	} else {
@@ -53,14 +53,53 @@ int main(int argc, char* argv[]) {
 	ROS_INFO_STREAM("Starting ball following");
 	circlesSub = nh.subscribe<ArmduinoRover::arrayOfCircles>("circles", 1000,
 			&onCirclesDetected);
+
+	ros::service::waitForService("control_id_assign");
+	ros::Publisher movePub = nh.advertise<ArmduinoRover::controlMovement>(
+			"control_movement", 1000);
+	ros::ServiceClient idClient = nh.serviceClient<
+			ArmduinoRover::controlIdAssign>("control_id_assign");
+
+	ArmduinoRover::controlIdAssign idSrv;
+
+	while (!idClient.call(idSrv)) {
+		ROS_INFO_STREAM("Waiting for control server");
+		ros::Duration(0.5).sleep();
+	}
+	int id = idSrv.response.id;
+
+	int priority;
+	ros::param::param("priority",priority,50);
 	ros::param::param("radius_setpoint", radiusSetpoint, 100);
 	double freq;
-	ros::param::param("frequency", freq, 5.0);
+	ros::param::param("frequency", freq, 15.0);
 	ros::Rate loop_rate(freq);
 	while (ros::ok()) {
 		ros::spinOnce();
-		if(circlesDetected){
-			//TODO publish errors to pid node
+		if (circlesDetected) {
+			ArmduinoRover::controlMovement moveMsg;
+			float multPower = ((float) radError) / ((float) radiusSetpoint);
+			if (multPower > 1)
+				multPower = 1;
+			if (multPower < -1)
+				multPower = -1;
+			int power = multPower * 128;
+			float multTurn = ((float) xError) / ((float) setPointX);
+			int leftPower;
+			int rightPower;
+			if (multTurn > 0) {
+				leftPower = power * (1 - multTurn);
+				rightPower = power * (1 + multTurn);
+			} else {
+				rightPower = power * (1 + multTurn);
+				leftPower = power * (1 - multTurn);
+			}
+			moveMsg.id=id;
+			moveMsg.left=leftPower;
+			moveMsg.right=rightPower;
+			moveMsg.priority=priority;
+			moveMsg.twist=0;
+			movePub.publish(moveMsg);
 		}
 		loop_rate.sleep();
 	}

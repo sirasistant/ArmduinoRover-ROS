@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 			assignId);
 	ROS_INFO("Ready to control robot.");
 	double freq;
-	ros::param::param("frequency", freq, 2.0);
+	ros::param::param("frequency", freq, 5.0);
 	ros::Rate loop_rate(freq);
 	while (ros::ok()) {
 		ros::spinOnce();
