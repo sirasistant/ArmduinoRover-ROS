@@ -75,8 +75,8 @@ int main(int argc, char* argv[]) {
 	ros::param::param("priority", priority, 50);
 	ros::param::param("radius_setpoint", radiusSetpoint, 100);
 	ros::param::param("proportional", proportional, 100);
-	float turnDivider;
-	ros::param::param("turn_divider",turnDivider,0.5f);
+	double turnDivider;
+	ros::param::param("turn_divider",turnDivider,2.0);
 
 	double freq;
 	ros::param::param("frequency", freq, 15.0);
