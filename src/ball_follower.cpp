@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 
 	int priority;
 	ros::param::param("priority",priority,50);
-	ros::param::param("radius_setpoint", radiusSetpoint, 50);
+	ros::param::param("radius_setpoint", radiusSetpoint, 150);
 	double freq;
 	ros::param::param("frequency", freq, 15.0);
 	ros::Rate loop_rate(freq);
