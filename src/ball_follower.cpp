@@ -14,6 +14,7 @@ int setPointX;
 int xError;
 int radError;
 int radiusSetpoint;
+int proportional;
 
 bool circlesDetected = false;
 
@@ -73,6 +74,7 @@ int main(int argc, char* argv[]) {
 	int priority;
 	ros::param::param("priority",priority,50);
 	ros::param::param("radius_setpoint", radiusSetpoint, 100);
+	ros::param::param("proportional",proportional,100);
 	double freq;
 	ros::param::param("frequency", freq, 15.0);
 	ros::Rate loop_rate(freq);
@@ -85,7 +87,7 @@ int main(int argc, char* argv[]) {
 				multPower = 1;
 			if (multPower < -1)
 				multPower = -1;
-			int power = multPower * 128;
+			int power = multPower * proportional;
 			float multTurn = -((float) xError) / ((float) setPointX);
 			int leftPower;
 			int rightPower;
