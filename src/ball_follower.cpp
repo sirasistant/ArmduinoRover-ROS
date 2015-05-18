@@ -89,6 +89,9 @@ int main(int argc, char* argv[]) {
 				multPower = -1;
 			int power = multPower * proportional;
 			float multTurn = -((float) xError) / ((float) setPointX);
+			if(multPower<0){
+				multTurn = -multTurn;
+			}
 			int leftPower;
 			int rightPower;
 			if (multTurn > 0) {
