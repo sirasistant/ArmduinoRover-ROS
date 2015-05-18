@@ -6,6 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <ArmduinoRover/circle.h>
 #include <ArmduinoRover/arrayOfCircles.h>
+#include <ArmduinoRover/controlMovement.h>
+#include <ArmduinoRover/controlIdAssign.h>
 
 ros::Subscriber circlesSub;
 int setPointX;
