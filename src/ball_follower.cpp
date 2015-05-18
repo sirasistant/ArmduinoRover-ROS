@@ -72,9 +72,9 @@ int main(int argc, char* argv[]) {
 	int id = idSrv.response.id;
 
 	int priority;
-	ros::param::param("priority",priority,50);
+	ros::param::param("priority", priority, 50);
 	ros::param::param("radius_setpoint", radiusSetpoint, 100);
-	ros::param::param("proportional",proportional,100);
+	ros::param::param("proportional", proportional, 100);
 	double freq;
 	ros::param::param("frequency", freq, 15.0);
 	ros::Rate loop_rate(freq);
@@ -88,24 +88,20 @@ int main(int argc, char* argv[]) {
 			if (multPower < -1)
 				multPower = -1;
 			int power = multPower * proportional;
-			float multTurn = -((float) xError) / ((float) setPointX);
-			if(multPower<0){
+			float multTurn = ((float) xError) / ((float) setPointX);
+			if (multPower < 0) {
 				multTurn = -multTurn;
 			}
 			int leftPower;
 			int rightPower;
-			if (multTurn > 0) {
-				leftPower = power * (1 - multTurn);
-				rightPower = power * (1 + multTurn);
-			} else {
-				rightPower = power * (1 + multTurn);
-				leftPower = power * (1 - multTurn);
-			}
-			moveMsg.id=id;
-			moveMsg.left=leftPower;
-			moveMsg.right=rightPower;
-			moveMsg.priority=priority;
-			moveMsg.twist=0;
+			leftPower = power * (1 + multTurn);
+			rightPower = power * (1 - multTurn);
+
+			moveMsg.id = id;
+			moveMsg.left = leftPower;
+			moveMsg.right = rightPower;
+			moveMsg.priority = priority;
+			moveMsg.twist = 0;
 			movePub.publish(moveMsg);
 		}
 		loop_rate.sleep();
