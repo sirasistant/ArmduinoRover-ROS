@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 	ros::param::param("initial_x", lastX, 0.0);
 	ros::param::param("initial_y", lastY, 0.0);
 	ros::param::param("initial_rotation", lastRotation, 0.0);
-	ros::param::param("wheel_radius", wheelRadius, 0.041);
+	ros::param::param("wheel_radius", wheelRadius, 0.0205);
 	ros::param::param("notch_count", notchCount, 12);
 	ros::param::param("axis_distance",axisDistance,0.137);
 	ros::spin();
