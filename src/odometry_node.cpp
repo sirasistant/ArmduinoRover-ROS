@@ -126,6 +126,10 @@ void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 		double deltaRot;
 		calcOdometry(leftEncoder,rightEncoder,lastRotation,deltaX,deltaY,deltaRot);
 
+		//Tuning
+		deltaX*=1.2;
+		deltaY*=1.2;
+
 		Vector2D delta(deltaX, deltaY);
 		delta.rotate(2.0 * M_PI * twist / 360.0); //rotate by twist in radians
 
