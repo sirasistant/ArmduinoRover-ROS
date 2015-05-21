@@ -63,6 +63,44 @@ int notchCount;
 double lastX;
 double lastY;
 double lastRotation;
+double axisDistance;
+
+
+void calcOdometry(double dist1,double dist2,double lastOrientation,double& deltaX,double& deltaY,double& deltaRot){
+	if(dist1==dist2){
+		deltaX = cos(lastOrientation)*dist1;
+		deltaY = sin(lastOrientation)*dist2;
+		deltaRot=0;
+		ROS_INFO_STREAM("Same distance on both encoders \n");
+		return;
+
+	    }else{
+	        if(dist2>dist1){
+	            double angle=(dist2-dist1)/axisDistance;
+	            double distanceFromCenter=std::min(dist1,dist2)/angle+axisDistance/2;
+	            double incrementInLocalsX=+(cos(angle)*distanceFromCenter-distanceFromCenter);
+	            double incrementInLocalsY=sin(angle)*distanceFromCenter;
+	            double incrementInGlobalsX=cos(lastOrientation)*incrementInLocalsY+cos(lastOrientation-M_PI/2)*incrementInLocalsX;
+	            double incrementInGlobalsY=sin(lastOrientation)*incrementInLocalsY+sin(lastOrientation-M_PI/2)*incrementInLocalsX;
+	            deltaX=incrementInGlobalsX;
+	            deltaY=incrementInGlobalsY;
+	            deltaRot=angle;
+	            return;
+	        }else{
+	            double angle=(dist1-dist2)/axisDistance;
+	            double distanceFromCenter=std::min(dist1,dist2)/angle+axisDistance/2;
+	            double incrementInLocalsX=-(cos(angle)*distanceFromCenter-distanceFromCenter);
+	            double incrementInLocalsY=sin(angle)*distanceFromCenter;
+	            double incrementInGlobalsX=cos(lastOrientation)*incrementInLocalsY+cos(lastOrientation-M_PI/2)*incrementInLocalsX;
+	            double incrementInGlobalsY=sin(lastOrientation)*incrementInLocalsY+sin(lastOrientation-M_PI/2)*incrementInLocalsX;
+	            deltaX=incrementInGlobalsX;
+	            deltaY=incrementInGlobalsY;
+	            deltaRot=-angle;
+	            return;
+	        }
+
+	    }
+}
 
 void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 	int twist = msg->twist;
@@ -71,18 +109,20 @@ void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 	if (count != 4) {
 		ROS_ERROR_STREAM("Invalid number of encoders");
 	} else {
-		int fl = encoders.at(0);
-		int fr = encoders.at(1);
+		int fl = encoders.at(1);
+		int fr = encoders.at(0);
 		int bl = encoders.at(2);
 		int br = encoders.at(3);
-		double leftEncoder = (fl + bl) / 2;
-		double rightEncoder = (fr + br) / 2;
-		//TODO calc increment in x , y, and rotation
+		double leftEncoder = bl;
+		double rightEncoder = fr;
+		// calc increment in x , y, and rotation
 		double deltaX;
 		double deltaY;
 		double deltaRot;
+		calcOdometry(leftEncoder,rightEncoder,lastRotation,deltaX,deltaY,deltaRot);
+
 		Vector2D delta(deltaX, deltaY);
-		delta.rotate(2 * M_PI * twist / 360); //rotate by twist in radians
+		delta.rotate(2.0 * M_PI * twist / 360.0); //rotate by twist in radians
 
 		//add delta
 		lastRotation+=deltaRot;
@@ -122,8 +162,9 @@ int main(int argc, char **argv) {
 	ros::param::param("initial_x", lastX, 0.0);
 	ros::param::param("initial_y", lastY, 0.0);
 	ros::param::param("initial_rotation", lastRotation, 0.0);
-	ros::param::param("wheel_radius", wheelRadius, 0.04); //TODO measure
-	ros::param::param("notch_count", notchCount, 20);
+	ros::param::param("wheel_radius", wheelRadius, 0.041);
+	ros::param::param("notch_count", notchCount, 12);
+	ros::param::param("axis_distance",axisDistance,0.137);
 	ros::spin();
 	return 0;
 }
