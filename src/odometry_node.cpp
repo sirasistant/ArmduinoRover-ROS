@@ -102,6 +102,11 @@ void calcOdometry(double dist1,double dist2,double lastOrientation,double& delta
 	    }
 }
 
+double toMeters(int notchMeasured){
+	double rads=2*M_PI*((double)notchMeasured)/((double)notchCount);
+	return rads*wheelRadius;
+}
+
 void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 	int twist = msg->twist;
 	std::vector<int> encoders = msg->lectures.data;
@@ -113,8 +118,8 @@ void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 		int fr = encoders.at(0);
 		int bl = encoders.at(2);
 		int br = encoders.at(3);
-		double leftEncoder = bl;
-		double rightEncoder = fr;
+		double leftEncoder = toMeters(bl);
+		double rightEncoder = toMeters(fr);
 		// calc increment in x , y, and rotation
 		double deltaX;
 		double deltaY;
