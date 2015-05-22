@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 		ArmduinoRover::controlMovement moveMsg;
 		ticksPassed++;
 		if (turning) {
-			moveMsg.left = -128;
+			moveMsg.left = -64;
 			moveMsg.right = 128;
 			if (ticksPassed > ticksTurning) {
 				ROS_INFO_STREAM("FORWARD");

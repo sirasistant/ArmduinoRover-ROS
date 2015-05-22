@@ -5,6 +5,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <std_msgs/Int16.h>
 
 class Vector2D {
 
@@ -64,6 +65,10 @@ double lastX;
 double lastY;
 double lastRotation;
 double axisDistance;
+ros::Publisher leftWheel;
+ros::Publisher rightWheel;
+int leftTotal;
+int rightTotal;
 
 
 void calcOdometry(double dist1,double dist2,double lastOrientation,double& deltaX,double& deltaY,double& deltaRot){
@@ -118,6 +123,17 @@ void onEncoderReceived(const ArmduinoRover::encoder_data::ConstPtr& msg) {
 		int fr = encoders.at(0);
 		int bl = encoders.at(2);
 		int br = encoders.at(3);
+
+		std_msgs::Int16 leftEnc;
+		std_msgs::Int16 rightEnc;
+		leftTotal+=bl;
+		rightTotal+=fr;
+		leftEnc.data=leftTotal;
+		rightEnc.data=rightTotal;
+
+		leftWheel.publish(leftEnc);
+		rightWheel.publish(rightEnc);
+
 		double leftEncoder = toMeters(bl);
 		double rightEncoder = toMeters(fr);
 		// calc increment in x , y, and rotation
@@ -167,7 +183,10 @@ int main(int argc, char **argv) {
 
 	ros::Subscriber encoderSub = n.subscribe("encoder_lectures", 1000,
 			onEncoderReceived);
-
+	leftWheel=n.advertise<std_msgs::Int16>("lwheel",5);
+	rightWheel=n.advertise<std_msgs::Int16>("rwheel",5);
+	rightTotal=0;
+	leftTotal=0;
 	ros::param::param("initial_x", lastX, 0.0);
 	ros::param::param("initial_y", lastY, 0.0);
 	ros::param::param("initial_rotation", lastRotation, 0.0);
